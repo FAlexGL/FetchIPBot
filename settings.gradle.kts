@@ -1,1 +1,1 @@
-rootProject.name = "IpSenderTelegram"
+rootProject.name = "FetchIpBot"

@@ -1,0 +1,84 @@
+#!/bin/bash
+
+# =============================================================================
+#  fetchipbot — wrapper script
+#  Place it in /usr/local/bin/fetchipbot and give it execute permissions:
+#       chmod +x /usr/local/bin/fetchipbot
+# =============================================================================
+
+JAR="/opt/fetchipbot/fetchipbot.jar"
+JAVA="/usr/bin/java"
+SERVICE="fetchipbot"
+WORKDIR="/opt/fetchipbot"
+
+need_sudo() {
+    if [ "$EUID" -ne 0 ]; then
+        sudo systemctl "$@"
+    else
+        systemctl "$@"
+    fi
+}
+
+validate_period() {
+    local period=$1
+    if [ -z "$period" ]; then
+        echo "[ERROR] A period in minutes is required. Example: fetchipbot $2 5"
+        exit 1
+    fi
+    if ! [[ "$period" =~ ^[0-9]+$ ]] || [ "$period" -le 0 ]; then
+        echo "[ERROR] Period must be a positive integer. Example: fetchipbot $2 5"
+        exit 1
+    fi
+}
+
+update_period() {
+    local period=$1
+    sudo sed -i "s|--daemon [0-9]*|--daemon $period|" /etc/systemd/system/"$SERVICE".service
+    sudo systemctl daemon-reload
+    echo "[INFO] Period updated to $period minutes."
+}
+
+case "$1" in
+
+    --start)
+        echo "Starting $SERVICE..."
+        need_sudo start "$SERVICE"
+        ;;
+
+    --stop)
+        echo "Stopping $SERVICE..."
+        need_sudo stop "$SERVICE"
+        ;;
+
+    --restart)
+        echo "Restarting $SERVICE..."
+        need_sudo restart "$SERVICE"
+        ;;
+
+    --status)
+        systemctl status "$SERVICE"
+        ;;
+
+    --daemon)
+        if systemctl is-active --quiet "$SERVICE"; then
+            echo "[ERROR] Daemon is already running. Use --set-period to change the period."
+            exit 1
+        fi
+        validate_period "$2" "--daemon"
+        update_period "$2"
+        need_sudo start "$SERVICE"
+        ;;
+
+    --set-period)
+        validate_period "$2" "--set-period"
+        update_period "$2"
+        echo "Restarting $SERVICE to apply new period..."
+        need_sudo restart "$SERVICE"
+        ;;
+
+    *)
+        cd "$WORKDIR" || { echo "[ERROR] Cannot access $WORKDIR"; exit 1; }
+        exec "$JAVA" -jar "$JAR" "$@"
+        ;;
+
+esac

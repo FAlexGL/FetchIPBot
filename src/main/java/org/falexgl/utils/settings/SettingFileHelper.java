@@ -13,7 +13,7 @@ import java.util.logging.Level;
 
 public class SettingFileHelper {
 
-    static final Path route = Paths.get("setting.txt");
+    static final Path route = Paths.get("/opt/fetchipbot/setting.txt");
     static final String firstLine = "TOKEN:";
     static final String secondLine = "CHAT_ID:";
 
@@ -44,7 +44,7 @@ public class SettingFileHelper {
     private static void createFile() {
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("CREATING SETTING FILE...");
+        System.out.println("CREATING SETTING FILE AT /opt/fetchipbot/...");
         System.out.print("Enter the token's bot: ");
         String token = sc.nextLine();
         System.out.print("Enter the chat ID: ");
