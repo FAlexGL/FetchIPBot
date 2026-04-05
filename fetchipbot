@@ -40,6 +40,13 @@ update_period() {
 
 case "$1" in
 
+    "")
+        echo "[ERROR] No option provided."
+        echo "Run 'fetchipbot --help' for usage."
+        exit 1
+        ;;
+
+
     --start)
         echo "Starting $SERVICE..."
         need_sudo start "$SERVICE"

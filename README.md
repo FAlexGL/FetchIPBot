@@ -109,7 +109,6 @@ fetchipbot --logs
 
 | Command | Description |
 |---|---|
-| `fetchipbot` | Launch interactive menu |
 | `fetchipbot --start` | Start the daemon |
 | `fetchipbot --stop` | Stop the daemon |
 | `fetchipbot --restart` | Restart the daemon |
@@ -117,7 +116,6 @@ fetchipbot --logs
 | `fetchipbot --set-period <minutes>` | Change the check period and restart |
 | `fetchipbot --logs` | Show last 50 log lines |
 | `fetchipbot --logs <N>` | Show last N log lines (0 = all) |
-| `fetchipbot --logs-live` | Follow logs in real time |
 | `fetchipbot --version` | Show version number |
 | `fetchipbot --description` | Show app description |
 | `fetchipbot --help` | Show help message |
