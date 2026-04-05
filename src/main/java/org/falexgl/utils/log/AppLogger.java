@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.logging.*;
@@ -45,6 +46,18 @@ public class AppLogger {
     }
 
     public static void showLogs() {
+        printLastLines(0, true); // 0 = all logs
+    }
+
+    public static void showLogsInDaemonMode() {
+        printLastLines(0, false); // 0 = all logs
+    }
+
+    public static void printLogsToConsole(int maxLines) {
+        printLastLines(maxLines, false);
+    }
+
+    public static void printLastLines(int maxLines, boolean waitForEnter) {
         Path root = Paths.get("").toAbsolutePath();
         String regex = "app_(\\d+)\\.log";
 
@@ -56,21 +69,29 @@ public class AppLogger {
                         return Integer.parseInt(name.replaceAll("app_|\\.log", ""));
                     }));
 
-            latestFile.ifPresentOrElse(
-                    p -> {
-                        try (Stream<String> lines = Files.lines(latestFile.get())) {
-                            lines.forEach(System.out::println);
-                        } catch (IOException e) {
-                            AppLogger.error(Level.SEVERE, "Error reading log file: ", e);
-                        }
-                    },
-                    () -> AppLogger.error(Level.WARNING, "Logger file not found.", null)
-            );
-            goBack();
+            if (latestFile.isEmpty()) {
+                System.out.println("[INFO] No log file found.");
+                if (waitForEnter) goBack();
+                return;
+            }
+
+            List<String> allLines = Files.readAllLines(latestFile.get());
+            List<String> toShow = (maxLines > 0 && allLines.size() > maxLines)
+                    ? allLines.subList(allLines.size() - maxLines, allLines.size())
+                    : allLines;
+
+            System.out.println();
+            System.out.println("=== LOG: " + latestFile.get().getFileName()
+                    + (maxLines > 0 ? " (last " + toShow.size() + " lines)" : "") + " ===");
+            toShow.forEach(System.out::println);
+            System.out.println("=== END OF LOG ===");
+            System.out.println();
+
         } catch (IOException e) {
             AppLogger.error(Level.SEVERE, "Error reading files in directory: ", e);
-            goBack();
         }
+
+        if (waitForEnter) goBack();
     }
 
     private static void goBack() {
