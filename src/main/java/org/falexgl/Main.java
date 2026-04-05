@@ -88,7 +88,6 @@ public class Main {
         System.out.println("  fetchipbot [OPTION]");
         System.out.println();
         System.out.println("OPTIONS:");
-        System.out.println("  (none)              Launch interactive menu");
         System.out.println("  --daemon <minutes>  Start bot in daemon mode (used by systemd)");
         System.out.println("  --version,  -v      Show version number");
         System.out.println("  --description       Show app name and description");
@@ -100,7 +99,6 @@ public class Main {
         System.out.println("  --restart           Restart the daemon");
         System.out.println("  --status            Show daemon status");
         System.out.println("  --logs [N]          Show last N log lines (default: 50 | 0 = all)");
-        System.out.println("  --logs-live         Follow logs in real time");
         System.out.println();
         System.out.println("EXAMPLES:");
         System.out.println("  fetchipbot                  # interactive menu");
